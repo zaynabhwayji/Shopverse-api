@@ -1,441 +1,314 @@
 # Shopverse API
 
-A complete REST API for a small e-commerce backend built with **Node.js, Express, MongoDB, and Mongoose**.
+Shopverse is a RESTful e-commerce backend built with **Node.js, Express.js, MongoDB, and Mongoose**. It provides API endpoints for managing products, categories, tags, users, and orders, with JWT-based authentication and role-based authorization.
 
-This project is a capstone exercise covering the main concepts from Sessions 1–4 of the Node.js API course: clean project structure, CRUD operations, MongoDB relationships, population, filtering, sorting, pagination, validation, and centralized error handling.
+This project was developed for **educational purposes** to practice backend development, database relationships, REST API design, authentication, authorization, and API testing.
 
-## Features
+## 🎯 Project Goals
 
-* RESTful API built with Express
-* MongoDB database with Mongoose
-* Full CRUD operations
-* Five resources:
+- Understand how a backend API works from request to response.
+- Practice building RESTful APIs using Express.js.
+- Work with MongoDB and Mongoose models and relationships.
+- Implement CRUD operations.
+- Understand authentication vs. authorization.
+- Implement JWT-based authentication.
+- Protect routes using middleware and user roles.
+- Practice error handling and API testing with Postman.
 
-  * Categories
-  * Tags
-  * Users
-  * Products
-  * Orders
-* One-to-many relationships
-* Many-to-many relationships
-* Mongoose `populate()`
-* Nested population with `items.product`
-* Product filtering
-* Sorting
-* Pagination
-* Server-side order total calculation
-* Request validation
-* Centralized error handling
-* HTTP status codes for successful and failed requests
-* Postman testing
+## 🚀 Features
 
-## Tech Stack
+### 1. RESTful API
 
-* Node.js
-* Express.js
-* MongoDB
-* Mongoose
-* dotenv
-* Nodemon
-* Postman
+The API supports the following resources:
 
-## Project Structure
+- **Products:** Create, read, update, and delete products.
+- **Categories:** Organize products into categories.
+- **Tags:** Assign tags to products.
+- **Users:** Manage user information.
+- **Orders:** Create and manage customer orders.
+
+### 2. MongoDB and Mongoose
+
+- Define schemas and models for application data.
+- Create relationships between collections.
+- Use references to connect related documents.
+- Use `populate()` to retrieve related documents.
+- Retrieve product information inside order items using nested population where configured.
+
+### 3. CRUD Operations
+
+The API uses standard HTTP methods:
+
+| Method | Purpose |
+|---|---|
+| `GET` | Retrieve resources |
+| `POST` | Create resources |
+| `PATCH` / `PUT` | Update resources |
+| `DELETE` | Delete resources |
+
+The supported operations depend on the endpoint.
+
+### 4. Filtering, Sorting, and Pagination
+
+Product listing endpoints support query parameters for filtering, sorting, and pagination where implemented.
+
+Examples:
+
+```http
+GET /products
+GET /products?category=CATEGORY_ID
+GET /products?sort=price
+GET /products?page=1&limit=10
+```
+
+The exact query parameters depend on the implementation of the products controller.
+
+### 5. JWT Authentication
+
+Shopverse uses JSON Web Tokens (JWT) to authenticate users.
+
+Authentication features include:
+
+- User registration.
+- User login using email and password.
+- Password hashing with `bcryptjs`.
+- Generating a JWT after successful login.
+- Verifying tokens through authentication middleware.
+- Retrieving the authenticated user's information.
+- Setting an expiration time for tokens.
+
+#### Authentication endpoints
+
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/auth/register` | Register a new user | Public |
+| `POST` | `/auth/login` | Log in and receive a JWT | Public |
+| `GET` | `/auth/me` | Get the authenticated user's information | Authenticated |
+
+To access a protected endpoint, send the token in the request header:
+
+```http
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+**Important:** A JWT is signed, not encrypted. Its payload can be read, so sensitive information such as passwords must never be stored in it.
+
+### 6. Authorization and Roles
+
+Authentication answers: **Who are you?**
+
+Authorization answers: **What are you allowed to do?**
+
+Shopverse uses role-based authorization to distinguish between users, such as:
+
+- `customer`
+- `admin`
+
+Authentication middleware verifies the user's token. Authorization middleware checks whether the authenticated user has the required role before allowing access to a restricted route.
+
+#### HTTP status codes
+
+| Status | Meaning |
+|---|---|
+| `200 OK` | Request completed successfully |
+| `201 Created` | Resource created successfully |
+| `400 Bad Request` | Invalid request data |
+| `401 Unauthorized` | Missing, invalid, or expired authentication |
+| `403 Forbidden` | Authenticated user lacks the required permission |
+| `404 Not Found` | Requested resource was not found |
+| `500 Internal Server Error` | Unexpected server error |
+
+### 7. Order Management
+
+Orders connect users with the products they purchase.
+
+Order-related functionality includes:
+
+- Creating orders with user and product references.
+- Storing ordered products and their quantities.
+- Calculating the order total on the server.
+- Associating orders with users.
+- Retrieving related product and user information where implemented.
+- Managing order status where supported by the controller.
+
+The server should calculate order totals from product data rather than trusting a total supplied by the client.
+
+### 8. Validation and Error Handling
+
+The project practices backend error handling, including:
+
+- Checking required request data.
+- Handling invalid IDs and missing resources.
+- Returning appropriate HTTP status codes.
+- Handling database and server errors.
+- Using centralized error-handling middleware where configured.
+
+### 9. API Testing with Postman
+
+Postman can be used to test the API endpoints, request bodies, responses, and authentication flow.
+
+Testing the authentication flow:
+
+1. Register a user using `POST /auth/register`.
+2. Log in using `POST /auth/login`.
+3. Copy the returned JWT.
+4. Add the token to the `Authorization` header as `Bearer YOUR_JWT_TOKEN`.
+5. Send a request to `GET /auth/me`.
+6. Test protected routes with different user roles.
+7. Check how the API responds to missing, invalid, or expired tokens and insufficient permissions.
+
+## 🛠️ Technologies Used
+
+- **Node.js** — JavaScript runtime.
+- **Express.js** — Backend framework for building REST APIs.
+- **MongoDB** — NoSQL database.
+- **Mongoose** — MongoDB object modeling.
+- **JSON Web Token (JWT)** — Token-based authentication.
+- **bcryptjs** — Password hashing.
+- **dotenv** — Environment variable configuration.
+- **Postman** — API testing.
+- **Nodemon** — Automatic server restart during development.
+
+## 📁 Project Structure
 
 ```text
 Shopverse/
-│
-├── models/
-│   ├── category.js
-│   ├── tag.js
-│   ├── user.js
-│   ├── product.js
-│   └── order.js
-│
 ├── controllers/
+│   ├── authController.js
 │   ├── categoryController.js
+│   ├── productController.js
 │   ├── tagController.js
 │   ├── userController.js
-│   ├── productController.js
 │   └── orderController.js
-│
+├── models/
+│   ├── User.js
+│   ├── Product.js
+│   ├── Category.js
+│   ├── Tag.js
+│   └── Order.js
 ├── routes/
+│   ├── authRoutes.js
+│   ├── productRoutes.js
 │   ├── categoryRoutes.js
 │   ├── tagRoutes.js
 │   ├── userRoutes.js
-│   ├── productRoutes.js
 │   └── orderRoutes.js
-│
 ├── middleware/
-│   └── errorHandler.js
-│
+│   ├── protect.js
+│   └── authorize.js
 ├── .env
 ├── .gitignore
 ├── index.js
 └── package.json
 ```
 
-## Data Model
+*The structure above is a reference; adjust filenames to match the actual project.*
 
-The API contains five resources and several relationships.
+## ⚙️ Getting Started
 
-```text
-Category 1 ─────── N Product
-Tag      N ─────── N Product
-User     1 ─────── N Order
-Order    N ─────── N Product
+### Prerequisites
+
+Install the following before running the project:
+
+- [Node.js](https://nodejs.org/)
+- MongoDB or a MongoDB Atlas database
+- [Postman](https://www.postman.com/) for API testing
+
+### 1. Clone the repository
+
+```bash
+git clone YOUR_REPOSITORY_URL
+cd Shopverse
 ```
 
-### Category
+Replace `YOUR_REPOSITORY_URL` with the repository's URL.
 
-* `name`
-* `description`
-
-A category can contain many products, while each product belongs to one category.
-
-### Tag
-
-* `name`
-
-A product can have multiple tags, and a tag can belong to multiple products.
-
-### User
-
-* `name`
-* `email`
-
-A user can place multiple orders.
-
-### Product
-
-* `name`
-* `price`
-* `inStock`
-* `category`
-* `tags`
-* `createdAt`
-* `updatedAt`
-
-Each product references one category and can reference multiple tags.
-
-### Order
-
-* `user`
-* `items`
-
-  * `product`
-  * `qty`
-* `total`
-* `status`
-* `createdAt`
-* `updatedAt`
-
-Order items are embedded objects that also contain a reference to a Product.
-
-## API Endpoints
-
-### Categories
-
-| Method | Endpoint                   | Description                |
-| ------ | -------------------------- | -------------------------- |
-| POST   | `/categories`              | Create a category          |
-| GET    | `/categories`              | Get all categories         |
-| GET    | `/categories/:id`          | Get one category           |
-| PUT    | `/categories/:id`          | Update a category          |
-| DELETE | `/categories/:id`          | Delete a category          |
-| GET    | `/categories/:id/products` | Get products in a category |
-
-### Tags
-
-| Method | Endpoint             | Description                 |
-| ------ | -------------------- | --------------------------- |
-| POST   | `/tags`              | Create a tag                |
-| GET    | `/tags`              | Get all tags                |
-| GET    | `/tags/:id`          | Get one tag                 |
-| PUT    | `/tags/:id`          | Update a tag                |
-| DELETE | `/tags/:id`          | Delete a tag                |
-| GET    | `/tags/:id/products` | Get products carrying a tag |
-
-### Users
-
-| Method | Endpoint            | Description                    |
-| ------ | ------------------- | ------------------------------ |
-| POST   | `/users`            | Create a user                  |
-| GET    | `/users`            | Get all users                  |
-| GET    | `/users/:id`        | Get one user                   |
-| PUT    | `/users/:id`        | Update a user                  |
-| DELETE | `/users/:id`        | Delete a user                  |
-| GET    | `/users/:id/orders` | Get orders belonging to a user |
-
-### Products
-
-| Method | Endpoint        | Description      |
-| ------ | --------------- | ---------------- |
-| POST   | `/products`     | Create a product |
-| GET    | `/products`     | Get products     |
-| GET    | `/products/:id` | Get one product  |
-| PUT    | `/products/:id` | Update a product |
-| DELETE | `/products/:id` | Delete a product |
-
-#### Product Filters
-
-The products endpoint supports filtering, sorting, and pagination.
-
-```text
-GET /products?category=<id>
-GET /products?tag=<id>
-GET /products?inStock=true
-GET /products?minPrice=20
-GET /products?maxPrice=100
-GET /products?sort=-price
-GET /products?page=2&limit=10
-```
-
-Filters can also be combined:
-
-```text
-GET /products?inStock=true&sort=-price&page=1&limit=2
-```
-
-### Orders
-
-| Method | Endpoint      | Description                   |
-| ------ | ------------- | ----------------------------- |
-| POST   | `/orders`     | Create an order               |
-| GET    | `/orders`     | Get all orders                |
-| GET    | `/orders/:id` | Get one fully populated order |
-| PATCH  | `/orders/:id` | Update order status           |
-| DELETE | `/orders/:id` | Delete an order               |
-
-Order statuses follow this sequence:
-
-```text
-pending → paid → shipped
-```
-
-## Populate
-
-Relationships are populated so useful responses return actual documents instead of only MongoDB IDs.
-
-### Products
-
-Products populate:
-
-```js
-.populate("category")
-.populate("tags")
-```
-
-### Orders
-
-Orders populate:
-
-```js
-.populate("user")
-.populate("items.product")
-```
-
-### Nested Populate
-
-An order contains embedded `items`, and each item contains a reference to a Product.
-
-The product itself contains references to its category and tags.
-
-Therefore, nested population can be used:
-
-```js
-.populate({
-    path: "items.product",
-    populate: [
-        { path: "category" },
-        { path: "tags" }
-    ]
-})
-```
-
-This allows an order response to contain the user, product, category, and tags as complete objects.
-
-## Server-Side Order Total
-
-When creating an order, the client does **not** provide the final total.
-
-The server loads each referenced product, gets its price, multiplies it by the requested quantity, and calculates the total.
-
-For example:
-
-```text
-Wireless Headphones: $65 × 2 = $130
-Laptop Stand:        $25 × 1 = $25
-
-Total = $155
-```
-
-This prevents the client from directly controlling the order total.
-
-## Validation & Error Handling
-
-The API uses centralized error handling for common errors.
-
-### 400 Bad Request
-
-Used for invalid input such as:
-
-* Invalid MongoDB ObjectId format
-* Missing required fields
-* Invalid order status transition
-* Duplicate unique values
-* Invalid enum values
-
-Example:
-
-```json
-{
-    "message": "Invalid order ID format"
-}
-```
-
-### 404 Not Found
-
-Returned when a valid ID is provided but the requested document does not exist.
-
-Example:
-
-```json
-{
-    "message": "Order not found"
-}
-```
-
-### 500 Internal Server Error
-
-Used for unexpected server-side errors.
-
-Controllers pass errors to the central error handler using:
-
-```js
-next(err);
-```
-
-## HTTP Status Codes
-
-| Status | Meaning                        |
-| ------ | ------------------------------ |
-| 200    | Successful request             |
-| 201    | Resource successfully created  |
-| 400    | Bad request / validation error |
-| 404    | Resource not found             |
-| 500    | Internal server error          |
-
-## Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-MONGO_URI=your_mongodb_connection_string
-```
-
-Do not commit `.env` to GitHub.
-
-Make sure `.gitignore` contains:
-
-```text
-node_modules/
-.env
-```
-
-## Installation
-
-Clone the repository and install dependencies:
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-Start the development server:
+### 3. Configure environment variables
+
+Create a `.env` file in the project's root directory:
+
+```env
+PORT=3000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_long_random_secret
+```
+
+Use the variable names expected by your code. Never commit your real `.env` file or expose your JWT secret.
+
+### 4. Run the project
+
+For development, if the `dev` script is configured:
 
 ```bash
 npm run dev
 ```
 
-Or start the production server:
+To start the server using the configured start script:
 
 ```bash
 npm start
 ```
 
-The API runs on:
+The API is expected to be available at:
 
 ```text
 http://localhost:3000
 ```
 
-## Testing with Postman
+The actual port depends on your configuration.
 
-The API was tested end-to-end using Postman.
+## 🔐 Authentication Flow
 
-The main test flow includes:
-
-1. Create categories.
-2. Create tags.
-3. Create a user.
-4. Create products with category and tag references.
-5. Test product filtering, sorting, pagination, and population.
-6. Get products by category.
-7. Get products by tag.
-8. Create an order with two products and quantities.
-9. Verify that the server calculates the total.
-10. Get a fully populated order.
-11. Get the user's orders.
-12. Update order status from `pending` → `paid` → `shipped`.
-13. Delete a product and verify a `404` response.
-14. Test invalid IDs and missing fields and verify `400` responses.
-
-## Example Order Request
-
-```http
-POST /orders
+```text
+Register
+   ↓
+Store the user in MongoDB
+   ↓
+Login with email and password
+   ↓
+Verify the password
+   ↓
+Generate a signed JWT
+   ↓
+Send the token with protected requests
+   ↓
+Authentication middleware verifies the token
+   ↓
+Authorization middleware checks the user's role
+   ↓
+Controller processes the request
 ```
 
-```json
-{
-    "user": "USER_ID",
-    "items": [
-        {
-            "product": "PRODUCT_ID_1",
-            "qty": 2
-        },
-        {
-            "product": "PRODUCT_ID_2",
-            "qty": 1
-        }
-    ]
-}
-```
+## 📚 What I Learned
 
-The `total` is calculated by the server.
+Through this project, I practiced:
 
-## What This Project Demonstrates
+- Structuring a Node.js and Express backend.
+- Designing RESTful API endpoints.
+- Creating and connecting MongoDB models.
+- Implementing CRUD operations.
+- Working with references and populated documents.
+- Using query parameters for filtering, sorting, and pagination.
+- Hashing passwords securely.
+- Implementing JWT authentication.
+- Protecting routes with middleware.
+- Applying role-based authorization.
+- Understanding the difference between `401 Unauthorized` and `403 Forbidden`.
+- Handling errors and validating request data.
+- Testing API endpoints and authentication flows with Postman.
 
-This project demonstrates practical experience with:
+## 🎓 Project Purpose
 
-* Express REST APIs
-* MVC-style project structure
-* Mongoose schemas and models
-* CRUD operations
-* MongoDB ObjectId references
-* One-to-many relationships
-* Many-to-many relationships
-* Embedded subdocuments
-* `populate()`
-* Nested population
-* Query parameters
-* Filtering and sorting
-* Pagination using `skip()` and `limit()`
-* Server-side calculations
-* Validation
-* Error handling middleware
-* Postman API testing
-* MongoDB data modeling
+Shopverse is an **educational project** created to strengthen practical backend development skills. Its main goal is to understand how REST APIs, databases, authentication, authorization, and middleware work together in a real-world-style e-commerce application.
 
-## Author
+It is a learning project focused on applying concepts, improving problem-solving skills, and building a foundation for more advanced full-stack applications.
+
+## 👩‍💻 Author
 
 **Zaynab Hwayji**
