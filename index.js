@@ -9,6 +9,7 @@ const userRoutes = require("./routes/userRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const authRoutes = require("./routes/authRoutes");
 const cors = require("cors");
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(cors());
@@ -29,4 +30,4 @@ app.use("/orders", orderRoutes);
 
 app.use(notFound); // no route matched -> 404
 app.use(errorHandler); // any next(err) lands here
-app.listen(3000, () => console.log("Server on port 3000"));
+app.listen(PORT, () => console.log(`Server on port ${PORT}`));
